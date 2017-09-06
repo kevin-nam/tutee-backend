@@ -62,8 +62,8 @@ exports.updatePost = function(pid, uid, newTitle, newDesc, newTagString, newType
 
 exports.getPost = function(pid) {
     return firebase.database().ref('posts/' + pid).once('value').then(function (snapshot) {
-        //console.log(snapshot.val());
-        //console.log(snapshot.val().date);
+        console.log(snapshot.val());
+        console.log(snapshot.val().date);
         if (snapshot.val()) {
             var data = {
                 title: snapshot.val().title,
@@ -72,7 +72,7 @@ exports.getPost = function(pid) {
                 type: snapshot.val().type,
                 date: snapshot.val().date
             };
-            //console.log(data);
+            console.log(data);
             return data;
         }
         return null;
