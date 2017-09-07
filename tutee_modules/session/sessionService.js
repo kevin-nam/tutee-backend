@@ -1,6 +1,6 @@
 var firebase = require('firebase');
 
-exports.RequestService = function() {
+exports.SessionService = function() {
 
   this.PENDING = "PENDING";
   this.REJECTED = "REJECTED";

@@ -11,7 +11,7 @@ var config = {
 };
 var chai = require('chai');
 var mocha = require('mocha');
-var rq = require('../tutee_modules/request/requestService.js');
+var rq = require('../tutee_modules/session/sessionService.js');
 
 assert = chai.assert;
 if (!firebase.apps.length) {
@@ -22,72 +22,72 @@ if (!firebase.apps.length) {
 var tid = "testtutor";
 var uid = "testtutee";
 var sid = [];
-var requestService;
+var sessionService;
 var rate;
 var duration;
-var SESSIONS_REFERENCE = "sessions/"
+var SESSIONS_REFERENCE = "sessions/";
 
 // Login Test
 describe('Sessions Request Test', function() {
-  this.timeout(5000)
+  this.timeout(5000);
   beforeEach(function(done) {
-    requestService = new rq.RequestService();
+    sessionService = new rq.SessionService();
     setTimeout(function() {
-      done()
-    }, 1000)
-  })
+      done();
+    }, 1000);
+  });
 
   it('Given a tutee, when retrieiving all his/her sessions, then all sessions should be present', function(done) {
     givenATutorAndATutee();
     whenTheTutorRequestsASession();
     whenTheTutorRequestsASession();
     whenTheTutorRequestsASession();
-    thenTheSessionsForTuteeAreAllRetrieved(requestService.PENDING, done);
-  })
+    thenTheSessionsForTuteeAreAllRetrieved(sessionService.PENDING, done);
+  });
 
   it('Given a tutee with no sessions, when retrieiving all his/her sessions, then there are no sessions received', function(done) {
     givenATutorAndATutee();
     //andNoSessionsForTheTutee
     thenThereAreNoSessionsForTuteeRetrieved(done);
-  })
+  });
 
   it('Given a tutor, when retrieiving all his/her sessions, then all sessions should be present', function(done) {
     givenATutorAndATutee();
     whenTheTutorRequestsASession();
     whenTheTutorRequestsASession();
     whenTheTutorRequestsASession();
-    thenTheSessionsForTutorAreAllRetrieved(requestService.PENDING, done);
-  })
+    thenTheSessionsForTutorAreAllRetrieved(sessionService.PENDING, done);
+  });
 
   it('Given a tutor with no sessions, when retrieiving all his/her sessions, then there are no sessions received', function(done) {
     givenATutorAndATutee();
     //andNoSessionsForTheTutor
     thenThereAreNoSessionsForTutorRetrieved(done);
-  })
+  });
 
 
   it('Given a tutor and a tutee, when requesting a session with the tutee, then the session exists in the database and is pending', function(done) {
     givenATutorAndATutee();
     whenTheTutorRequestsASession();
-    thenTheSessionExistsInTheDatabase(requestService.PENDING, done)
-  })
+    thenTheSessionExistsInTheDatabase(sessionService.PENDING, done);
+  });
 
   it('Given a tutor and a tutee, when requesting a session with the tutee and the tutee accepts it, then the session exists in the database and is accepted', function(done) {
     givenATutorAndATutee();
-    whenTheTutorRequestsASessionAndTheTuteeAcceptsIt()
-    thenTheSessionExistsInTheDatabase(requestService.ACCEPTED, done)
-  })
+    whenTheTutorRequestsASessionAndTheTuteeAcceptsIt();
+    thenTheSessionExistsInTheDatabase(sessionService.ACCEPTED, done);
+  });
 
   it('Given a tutor and a tutee, when requesting a session with the tutee and the tutee accepts it, then the session exists in the database and is rejected', function(done) {
     givenATutorAndATutee();
-    whenTheTutorRequestsASessionAndTheTuteeRejectsIt()
-    thenTheSessionExistsInTheDatabase(requestService.REJECTED, done)
-  })
+    whenTheTutorRequestsASessionAndTheTuteeRejectsIt();
+    thenTheSessionExistsInTheDatabase(sessionService.REJECTED, done);
+  });
 
   it('Given a tutor and a tutee, when requesting an invalid session with the tutee, then the session does not exists in the database', function(done) {
     givenATutorAndATutee();
-    whenTheTutorRequestAnInvalidSession()
-    thenTheSessionDoesNotExistInTheDatabase(done)
+    whenTheTutorRequestAnInvalidSession();
+    thenTheSessionDoesNotExistInTheDatabase(done);
   })
 
 });
@@ -102,52 +102,52 @@ function givenATutorAndATutee() {
 function whenTheTutorRequestsASession() {
   rate = 10.0;
   duration = 2;
-  sid.push(requestService.createSession(tid, uid, rate, duration));
+  sid.push(sessionService.createSession(tid, uid, rate, duration));
 }
 
 function whenTheTutorRequestsASessionAndTheTuteeAcceptsIt() {
   rate = 10.0;
   duration = 2;
-  sid.push(requestService.createSession(tid, uid, rate, duration));
+  sid.push(sessionService.createSession(tid, uid, rate, duration));
 
   // wait a bit
   setTimeout(function() {
-    requestService.acceptSession(sid);
+    sessionService.acceptSession(sid);
   }, 300);
 }
 
 function whenTheTutorRequestsASessionAndTheTuteeRejectsIt() {
   rate = 10.0;
   duration = 2;
-  sid.push(requestService.createSession(tid, uid, rate, duration));
+  sid.push(sessionService.createSession(tid, uid, rate, duration));
 
   // wait a bit
   setTimeout(function() {
-    requestService.rejectSession(sid);
+    sessionService.rejectSession(sid);
   }, 300);
 }
 
 function whenTheTutorRequestAnInvalidSession() {
-  sid.push(requestService.createSession(null, null, null, null));
+  sid.push(sessionService.createSession(null, null, null, null));
 }
 
 // Then
 function thenTheSessionsForTuteeAreAllRetrieved(status, done) {
-  requestService.getSessionsForTutee(uid).then(function(sessions) {
+  sessionService.getSessionsForTutee(uid).then(function(sessions) {
     assert.equal(Object.keys(sessions).length, sid.length, 'size of sessions should be equal to ' + sid.length);
     thenTheSessionExistsInTheDatabase(status, done);
   });
 }
 
 function thenTheSessionsForTutorAreAllRetrieved(status, done) {
-  requestService.getSessionsForTutor(tid).then(function(sessions) {
+  sessionService.getSessionsForTutor(tid).then(function(sessions) {
     assert.equal(Object.keys(sessions).length, sid.length, 'size of sessions should be equal to ' + sid.length);
     thenTheSessionExistsInTheDatabase(status, done);
   });
 }
 
 function thenThereAreNoSessionsForTuteeRetrieved(done) {
-  requestService.getSessionsForTutee(uid).then(function(sessions) {
+  sessionService.getSessionsForTutee(uid).then(function(sessions) {
     if (sessions) {
       assert.fail(sessions, null, 'There should not be any sessions yet there are ' + Object.keys(sessions).length);
     }
@@ -156,7 +156,7 @@ function thenThereAreNoSessionsForTuteeRetrieved(done) {
 }
 
 function thenThereAreNoSessionsForTutorRetrieved(done) {
-  requestService.getSessionsForTutor(tid).then(function(sessions) {
+  sessionService.getSessionsForTutor(tid).then(function(sessions) {
     if (sessions) {
       assert.fail(sessions, null, 'There should not be any sessions yet there are ' + Object.keys(sessions).length);
     }
