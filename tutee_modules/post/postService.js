@@ -1,36 +1,35 @@
 var firebase = require('firebase');
 var tagService = require('../tag/tagService.js');
 
-exports.createPost = function(title, description, tagString, type, uid) {
-    if (title !== null && description !== null && tagString !== null)
-    {
+exports.createPost = function (uid, title, description, tagString, type) {
+    if (title !== null && description !== null && tagString !== null) {
         var newPost = firebase.database().ref('Posts/').push();
         var pid = newPost.key;
         var newDate = new Date();
 
-            // A post entry.
-            var postData = {
-                uid: uid,
-                title: title,
-                description: description,
-                tagString: helperParseTags(tagString),
-                date: newDate,
-                type: type
-            };
-            //console.log(postData);
-            if (postData.tagString) {
-                var updates = {};
-                updates['/posts/' + pid] = postData;
-                firebase.database().ref().update(updates);
-                tagService.updateTags(postData.tagString, pid);
-                return pid;
-            }
+        // A post entry.
+        var postData = {
+            uid: uid,
+            title: title,
+            description: description,
+            tagString: helperParseTags(tagString),
+            type: type,
+            date: newDate
+        };
+        //console.log(postData);
+        if (postData.tagString) {
+            var updates = {};
+            updates['/posts/' + pid] = postData;
+            firebase.database().ref().update(updates);
+            tagService.updateTags(postData.tagString, pid);
+            return postData;
+        }
         return null;
     }
     return null;
 }
 
-exports.updatePost = function(pid, uid, newTitle, newDesc, newTagString, newType) {
+exports.updatePost = function (pid, uid, newTitle, newDesc, newTagString, newType) {
     if (newTitle !== null && newDesc !== null && newTagString !== null) {
         var updates = {};
 
@@ -44,23 +43,23 @@ exports.updatePost = function(pid, uid, newTitle, newDesc, newTagString, newType
         };
 
         if (newData.tagString) {
-            firebase.database().ref('/posts/'+ pid).once('value').then(function (snapshot) {
+            firebase.database().ref('/posts/' + pid).once('value').then(function (snapshot) {
                 if (snapshot.val()) {
                     tagService.removePid(snapshot.val().tagString, pid);
                     tagService.updateTags(newData.tagString, pid);
                 }
             });
 
-
             updates['/posts/' + pid] = newData;
             firebase.database().ref().update(updates);
+            return newData;
         }
         return null;
     }
     return null;
 }
 
-exports.getPost = function(pid) {
+exports.getPost = function (pid) {
     return firebase.database().ref('posts/' + pid).once('value').then(function (snapshot) {
         console.log(snapshot.val());
         console.log(snapshot.val().date);
@@ -79,23 +78,28 @@ exports.getPost = function(pid) {
     });
 }
 
-exports.getPostList = function(pidList) {
+exports.getPostList = function (pidList) {
+    if (!(pidList instanceof Array)) {
+
+    }
     var postObj;
     var finalList = [];
-    var map = new Map([[Object, 'post']]);
+    var map = new Map([
+        [Object, 'post']
+    ]);
     var pidListLength = pidList.length;
     pidList.sort();
 
-    return firebase.database().ref('posts/').orderByKey().startAt(pidList[0]).endAt(pidList[pidListLength-1]).once('value').then(function (snapshot) {
+    return firebase.database().ref('posts/').orderByKey().startAt(pidList[0]).endAt(pidList[pidListLength - 1]).once('value').then(function (snapshot) {
         postObj = snapshot.val();
         //console.log(snapshot.child("posts/" +pidList[0]).key);
 
-        Object.keys(postObj).forEach(function(key) {
+        Object.keys(postObj).forEach(function (key) {
             map.set(key, postObj[key]);
         });
-        pidList.forEach(function(pid) {
+        pidList.forEach(function (pid) {
             var mapPost = map.get(pid);
-            if(mapPost) {
+            if (mapPost) {
                 finalList.push(mapPost);
             }
         });
@@ -104,20 +108,22 @@ exports.getPostList = function(pidList) {
     });
 }
 
-exports.deletePost = function(pid) {
+exports.deletePost = function (pid, callback) {
     var ref = firebase.database().ref('posts/' + pid);
     ref.once('value').then(function (snapshot) {
         if (snapshot.val()) {
             if (pid) {
                 tagService.removePid(snapshot.val().tagString, pid);
                 ref.remove();
+                callback('Post Deleted');
             }
         }
+        callback('Post Not Found');
     });
 }
 
-exports.parseTags = function(tagString) {
-   return helperParseTags(tagString);
+exports.parseTags = function (tagString) {
+    return helperParseTags(tagString);
 }
 
 function helperParseTags(tagString) {
@@ -140,7 +146,7 @@ function helperParseTags(tagString) {
     }
     //deals with string that ends with 1 or more #s
     if (/#+$/g.test(tempTags)) {
-        tempTags = tempTags.replace(/#+$/g,"");
+        tempTags = tempTags.replace(/#+$/g, "");
     }
 
     if (tempTags === '') {
