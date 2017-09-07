@@ -178,7 +178,7 @@ describe('Tag Parser Test', function () {
         thenCorrectTagString(done);
     });
 
-     //Tags string with no #s
+    //Tags string with no #s
     it('Given tag info containing no #s when parsing the tag string then a null value should be returned', function (done) {
         givenNoHashtags();
         whenParsingTag();
@@ -187,10 +187,10 @@ describe('Tag Parser Test', function () {
 
     //Tag string with only 1 # at the beginning
     it('Given tag info containing one # at the beginning of the string when parsing the tag string then a correct tag string is created containing only 1 tag', function (done) {
-       givenOneHashtagAtBeginning();
-       whenParsingTag();
-       thenCorrectTagStringWithOneTag(done);
-   });
+        givenOneHashtagAtBeginning();
+        whenParsingTag();
+        thenCorrectTagStringWithOneTag(done);
+    });
 
     //Tag string with only 1 # at the middle
     it('Given tag info containing one # at the beginning of the string when parsing the tag string then a null value should be returned', function (done) {
@@ -276,11 +276,11 @@ function whenRemovingPost() {
 }
 
 function whenGettingPost() {
-    setTimeout(function() {
-        postService.getPost(pid).then(function(data) {
+    setTimeout(function () {
+        postService.getPost(pid).then(function (data) {
             post = data;
         });
-    },1000);
+    }, 1000);
 }
 
 function whenUpdatingPost() {
@@ -289,7 +289,7 @@ function whenUpdatingPost() {
 }
 
 function whenSearchingtheDatabase() {
-    postService.getPostList(pidList).then(function(list) {
+    postService.getPostList(pidList).then(function (list) {
         postList = list;
         //console.log(postList);
         //console.log(postList[0]);
@@ -313,7 +313,7 @@ function thenPostExistsInDatabase(done) {
         assert.equal(snapshot.val().title, title, 'Title should be the same.');
         assert.equal(snapshot.val().description, description, 'description should be the same.');
         assert.equal(snapshot.val().tagString, correctTags, 'Tags should be the same.');
-        assert.equal(snapshot.val().type, type1,'The type should be the same.');
+        assert.equal(snapshot.val().type, type1, 'The type should be the same.');
 
         done();
     });
@@ -321,7 +321,7 @@ function thenPostExistsInDatabase(done) {
 
 function thenPostDoesNotExistInDatabase(done) {
 
-    setTimeout(function() {
+    setTimeout(function () {
         assert.isNull(pid, "pid should be null");
 
         done();
@@ -330,60 +330,60 @@ function thenPostDoesNotExistInDatabase(done) {
 
 function thenPostNoLongerExistInDatabase(done) {
 
-    setTimeout(function() {
+    setTimeout(function () {
         firebase.database().ref('posts/' + pid).once('value').then(function (snapshot) {
 
             assert.isNull(snapshot.val(), 'Post should not exist');
 
-        done();
+            done();
         });
     }, 1000);
 }
 
 function thenPostRetrievedFromDatabase(done) {
-    setTimeout(function() {
+    setTimeout(function () {
         firebase.database().ref('posts/' + pid).once('value').then(function (snapshot) {
 
-        assert.isNotNull(snapshot.val(), 'Post should exist');
-        assert.equal(snapshot.val().title, post.title, 'Title should be the same.');
-        assert.equal(snapshot.val().description, post.description, 'description should be the same.');
-        assert.equal(snapshot.val().tagString, post.tagString, 'Tags should be the same.');
-        assert.equal(snapshot.val().type, post.type, 'Type should be the same.');
-        assert.equal(snapshot.val().date, post.date, 'Date should be the same.');
+            assert.isNotNull(snapshot.val(), 'Post should exist');
+            assert.equal(snapshot.val().title, post.title, 'Title should be the same.');
+            assert.equal(snapshot.val().description, post.description, 'description should be the same.');
+            assert.equal(snapshot.val().tagString, post.tagString, 'Tags should be the same.');
+            assert.equal(snapshot.val().type, post.type, 'Type should be the same.');
+            assert.equal(snapshot.val().date, post.date, 'Date should be the same.');
 
-        done();
+            done();
         });
     }, 2000);
 }
 
 function thenPostUpdatedinDatabase(done) {
-    setTimeout(function() {
+    setTimeout(function () {
         firebase.database().ref('posts/' + pid).once('value').then(function (snapshot) {
             assert.isNotNull(snapshot.val(), 'Post should exist');
             assert.equal(snapshot.val().title, newTitle, 'Title should be the same.');
             assert.equal(snapshot.val().description, newDesc, 'description should be the same.');
             assert.equal(snapshot.val().tagString, newCorrectTags, 'Tags should be the same.');
-            assert.equal(snapshot.val().type, type1,'The type should be the same.');
+            assert.equal(snapshot.val().type, type1, 'The type should be the same.');
 
             done();
         });
-   },1000);
+    }, 1000);
 }
 
 function thenlistofPostsisReceived(done) {
-    setTimeout(function() {
-        firebase.database().ref('posts/').orderByKey().startAt(pidList[0]).endAt(pidList[pidList.length-1]).once('value').then(function (snapshot) {
+    setTimeout(function () {
+        firebase.database().ref('posts/').orderByKey().startAt(pidList[0]).endAt(pidList[pidList.length - 1]).once('value').then(function (snapshot) {
             //console.log(postList[0]);
             //console.log(pidList[0]);
-            for(i=0; i<pidList.length-1; i++) {
-                assert.equal(snapshot.child("posts/" +pidList[i]).key, pidList[i], "Pid's should be the same");
+            for (i = 0; i < pidList.length - 1; i++) {
+                assert.equal(snapshot.child("posts/" + pidList[i]).key, pidList[i], "Pid's should be the same");
             }
             done();
         });
     }, 1000);
 }
 
-function thenCorrectTagString (done) {
+function thenCorrectTagString(done) {
     assert.deepEqual(actualTags, expectedTags, 'Tag string should be the same.');
 
     done();
@@ -395,7 +395,7 @@ function thenCorrectTagStringWithOneTag(done) {
     done();
 }
 
-function thenReturnNullTags (done) {
+function thenReturnNullTags(done) {
     assert.isNull(actualTags, 'Tags should not exist.');
 
     done();
