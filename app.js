@@ -18,7 +18,7 @@ firebase.initializeApp(config);
 
 // Services
 var auth = require('./routes/auth');
-var tutor = require('./routes/tutor');
+var user = require('./routes/user');
 var post = require('./routes/post');
 var request = require('./routes/request');
 var search = require('./routes/search');
@@ -42,7 +42,7 @@ app.use('/chai', express.static(path.join(__dirname, 'node_modules/chai')));
 app.use('/tutee_modules', express.static(path.join(__dirname, 'tutee_modules')));
 
 app.use('/auth', auth);
-app.use('/tutor', tutor);
+app.use('/user', user);
 app.use('/post', post);
 app.use('/request', request);
 app.use('/search', search);
