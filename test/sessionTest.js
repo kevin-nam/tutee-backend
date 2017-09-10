@@ -1,31 +1,30 @@
-/**********************************************************************
+/** ********************************************************************
 Initialization
 ***********************************************************************/
 var firebase = require('firebase');
 var config = {
-    apiKey: "AIzaSyBYbaQwELtNm4jxpEMHuws-vmlIRv1-YBA",
-    authDomain: "tutee-9b050.firebaseapp.com",
-    databaseURL: "https://tutee-9b050.firebaseio.com",
-    storageBucket: "tutee-9b050.appspot.com",
-    messagingSenderId: "120931284750"
+  apiKey: 'AIzaSyBYbaQwELtNm4jxpEMHuws-vmlIRv1-YBA',
+  authDomain: 'tutee-9b050.firebaseapp.com',
+  databaseURL: 'https://tutee-9b050.firebaseio.com',
+  storageBucket: 'tutee-9b050.appspot.com',
+  messagingSenderId: '120931284750'
 };
 var chai = require('chai');
-var mocha = require('mocha');
 var rq = require('../tutee_modules/session/sessionService.js');
 
 assert = chai.assert;
 if (!firebase.apps.length) {
-    firebase.initializeApp(config);
+  firebase.initializeApp(config);
 }
 
 // Variables
-var tid = "testtutor";
-var uid = "testtutee";
+var tid = 'testtutor';
+var uid = 'testtutee';
 var sid = [];
 var sessionService;
 var rate;
 var duration;
-var SESSIONS_REFERENCE = "sessions/";
+var SESSIONS_REFERENCE = 'sessions/';
 
 // Login Test
 describe('Sessions Request Test', function() {
@@ -47,7 +46,7 @@ describe('Sessions Request Test', function() {
 
   it('Given a tutee with no sessions, when retrieiving all his/her sessions, then there are no sessions received', function(done) {
     givenATutorAndATutee();
-    //andNoSessionsForTheTutee
+    // andNoSessionsForTheTutee
     thenThereAreNoSessionsForTuteeRetrieved(done);
   });
 
@@ -61,7 +60,7 @@ describe('Sessions Request Test', function() {
 
   it('Given a tutor with no sessions, when retrieiving all his/her sessions, then there are no sessions received', function(done) {
     givenATutorAndATutee();
-    //andNoSessionsForTheTutor
+    // andNoSessionsForTheTutor
     thenThereAreNoSessionsForTutorRetrieved(done);
   });
 
@@ -88,14 +87,13 @@ describe('Sessions Request Test', function() {
     givenATutorAndATutee();
     whenTheTutorRequestAnInvalidSession();
     thenTheSessionDoesNotExistInTheDatabase(done);
-  })
-
+  });
 });
 
 // Given
 function givenATutorAndATutee() {
-  tid = "testtutor";
-  uid = "testtutee";
+  tid = 'testtutor';
+  uid = 'testtutee';
 }
 
 // When
@@ -133,21 +131,21 @@ function whenTheTutorRequestAnInvalidSession() {
 
 // Then
 function thenTheSessionsForTuteeAreAllRetrieved(status, done) {
-  sessionService.getSessionsForTutee(uid).then(function(sessions) {
+  sessionService.getSessions(uid).then(function(sessions) {
     assert.equal(Object.keys(sessions).length, sid.length, 'size of sessions should be equal to ' + sid.length);
     thenTheSessionExistsInTheDatabase(status, done);
   });
 }
 
 function thenTheSessionsForTutorAreAllRetrieved(status, done) {
-  sessionService.getSessionsForTutor(tid).then(function(sessions) {
+  sessionService.getSessions(tid).then(function(sessions) {
     assert.equal(Object.keys(sessions).length, sid.length, 'size of sessions should be equal to ' + sid.length);
     thenTheSessionExistsInTheDatabase(status, done);
   });
 }
 
 function thenThereAreNoSessionsForTuteeRetrieved(done) {
-  sessionService.getSessionsForTutee(uid).then(function(sessions) {
+  sessionService.getSessions(uid).then(function(sessions) {
     if (sessions) {
       assert.fail(sessions, null, 'There should not be any sessions yet there are ' + Object.keys(sessions).length);
     }
@@ -156,7 +154,7 @@ function thenThereAreNoSessionsForTuteeRetrieved(done) {
 }
 
 function thenThereAreNoSessionsForTutorRetrieved(done) {
-  sessionService.getSessionsForTutor(tid).then(function(sessions) {
+  sessionService.getSessions(tid).then(function(sessions) {
     if (sessions) {
       assert.fail(sessions, null, 'There should not be any sessions yet there are ' + Object.keys(sessions).length);
     }
@@ -167,11 +165,11 @@ function thenThereAreNoSessionsForTutorRetrieved(done) {
 
 function thenTheSessionExistsInTheDatabase(status, done) {
   setTimeout(function() {
-    while(sid.length > 0) {
+    while (sid.length > 0) {
       sidToCheck = sid.pop();
       firebase.database().ref(SESSIONS_REFERENCE + sidToCheck).once('value').then(function(snapshot) {
         actualSession = snapshot.val();
-        console.log(actualSession)
+        // console.log(actualSession);
         assert.equal(actualSession.uid, uid, 'uid is not equal');
         assert.equal(actualSession.tid, tid, 'tid is not equal');
         assert.equal(actualSession.rate, rate, 'rate is not equal');
@@ -181,13 +179,10 @@ function thenTheSessionExistsInTheDatabase(status, done) {
 
         // Remove from database
         firebase.database().ref().child(SESSIONS_REFERENCE + snapshot.key).remove();
-      })
+      });
     }
     setTimeout(done(), 1000);
-
-
   }, 1000);
-
 }
 
 function thenTheSessionDoesNotExistInTheDatabase(done) {
