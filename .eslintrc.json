@@ -1,0 +1,21 @@
+{
+    "env": {
+        "browser": true,
+        "node": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "google"
+    ],
+    "rules": {
+        "no-var":"off",
+        "linebreak-style":"off",
+        "new-cap":"warn",
+        "max-len":"off",
+        "no-tabs":"error",
+        "require-jsdoc":"off",
+        "no-console": "warn",
+        "no-undef":"off",
+        "comma-dangle": "off"
+    }
+}

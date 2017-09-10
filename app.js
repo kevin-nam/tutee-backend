@@ -8,11 +8,11 @@ var bodyParser = require('body-parser');
 // Firebase
 var firebase = require('firebase');
 var config = {
-    apiKey: "AIzaSyBYbaQwELtNm4jxpEMHuws-vmlIRv1-YBA",
-    authDomain: "tutee-9b050.firebaseapp.com",
-    databaseURL: "https://tutee-9b050.firebaseio.com",
-    storageBucket: "tutee-9b050.appspot.com",
-    messagingSenderId: "120931284750"
+  apiKey: 'AIzaSyBYbaQwELtNm4jxpEMHuws-vmlIRv1-YBA',
+  authDomain: 'tutee-9b050.firebaseapp.com',
+  databaseURL: 'https://tutee-9b050.firebaseio.com',
+  storageBucket: 'tutee-9b050.appspot.com',
+  messagingSenderId: '120931284750',
 };
 firebase.initializeApp(config);
 
@@ -20,7 +20,7 @@ firebase.initializeApp(config);
 var auth = require('./routes/auth');
 var user = require('./routes/user');
 var post = require('./routes/post');
-var request = require('./routes/request');
+var session = require('./routes/session');
 var search = require('./routes/search');
 
 var app = express();
@@ -30,10 +30,10 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -44,7 +44,7 @@ app.use('/tutee_modules', express.static(path.join(__dirname, 'tutee_modules')))
 app.use('/auth', auth);
 app.use('/user', user);
 app.use('/post', post);
-app.use('/request', request);
+app.use('/session', session);
 app.use('/search', search);
 
 // catch 404 and forward to error handler
