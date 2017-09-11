@@ -1,4 +1,4 @@
-var firebase = require('firebase');
+var firebase = require('firebase-admin');
 exports.CONNECTION_REFERENCE = 'connection/';
 
 exports.createNewConnection = function(uid1, uid2, callback) {

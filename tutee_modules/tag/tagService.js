@@ -1,4 +1,4 @@
-var firebase = require('firebase');
+var firebase = require('firebase-admin');
 
 // tokenize the string of post tags
 exports.tokenizeTags = function(tagString) {

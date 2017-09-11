@@ -1,4 +1,4 @@
-var firebase = require('firebase');
+var firebase = require('firebase-admin');
 var tagService = require('../tag/tagService.js');
 
 exports.createPost = function(uid, title, description, tagString, type) {

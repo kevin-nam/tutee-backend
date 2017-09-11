@@ -1,4 +1,4 @@
-var firebase = require('firebase');
+var firebase = require('firebase-admin');
 
 exports.getUserData = function(uid) {
   return firebase.database().ref('users/' + uid).once('value').then(function(snapshot) {

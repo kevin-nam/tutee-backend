@@ -1,21 +1,18 @@
 /** ********************************************************************
 Initialization
 ***********************************************************************/
-var firebase = require('firebase');
-var config = {
-  apiKey: 'AIzaSyBYbaQwELtNm4jxpEMHuws-vmlIRv1-YBA',
-  authDomain: 'tutee-9b050.firebaseapp.com',
-  databaseURL: 'https://tutee-9b050.firebaseio.com',
-  storageBucket: 'tutee-9b050.appspot.com',
-  messagingSenderId: '120931284750'
-};
+var firebase = require('firebase-admin');
+var serviceAccount = require('../firebase-admin-cred.json');
+
 var chai = require('chai');
-var mocha = require('mocha');
 var connectionService = require('../tutee_modules/connection/connectionService.js');
 
 assert = chai.assert;
 if (!firebase.apps.length) {
-  firebase.initializeApp(config);
+  firebase.initializeApp({
+    credential: firebase.credential.cert(serviceAccount),
+    databaseURL: 'https://tutee-9b050.firebaseio.com'
+  });
 }
 
 /** ********************************************************************
