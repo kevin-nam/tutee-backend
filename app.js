@@ -20,8 +20,9 @@ firebase.initializeApp(config);
 var auth = require('./routes/auth');
 var tutor = require('./routes/tutor');
 var post = require('./routes/post');
-var request = require('./routes/request');
+var session = require('./routes/session');
 var search = require('./routes/search');
+var connection = require('./routes/connection');
 
 var app = express();
 
@@ -44,8 +45,9 @@ app.use('/tutee_modules', express.static(path.join(__dirname, 'tutee_modules')))
 app.use('/auth', auth);
 app.use('/tutor', tutor);
 app.use('/post', post);
-app.use('/request', request);
+app.use('/session', session);
 app.use('/search', search);
+app.use('/connection', connection);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
