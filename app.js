@@ -15,7 +15,6 @@ firebase.initializeApp({
 });
 
 // Services
-var auth = require('./routes/auth');
 var user = require('./routes/user');
 var post = require('./routes/post');
 var session = require('./routes/session');
@@ -40,7 +39,6 @@ app.use('/mocha', express.static(path.join(__dirname, 'node_modules/mocha')));
 app.use('/chai', express.static(path.join(__dirname, 'node_modules/chai')));
 app.use('/tutee_modules', express.static(path.join(__dirname, 'tutee_modules')));
 
-app.use('/auth', auth);
 app.use('/user', user);
 app.use('/post', post);
 app.use('/session', session);
