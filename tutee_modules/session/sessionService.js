@@ -1,35 +1,22 @@
 var firebase = require('firebase');
 
 exports.SessionService = function() {
+  this.PENDING = 'PENDING';
+  this.REJECTED = 'REJECTED';
+  this.ACCEPTED = 'ACCEPTED';
+  this.SESSIONS_REFERENCE = 'sessions/';
 
-  this.PENDING = "PENDING";
-  this.REJECTED = "REJECTED";
-  this.ACCEPTED = "ACCEPTED";
-  this.SESSIONS_REFERENCE = "sessions/"
-
-  this.getSessionsForTutee = function(uid) {
+  this.getSessions = function(uid) {
     return firebase.database().ref(this.SESSIONS_REFERENCE)
-    .orderByChild('uid')
-    .equalTo(uid)
-    .once('value')
-    .then(function(snapshot) {
-      var sessions = snapshot.val();
-      console.log(sessions);
-      return sessions;
-    });
-  }
-
-  this.getSessionsForTutor = function(tid) {
-    return firebase.database().ref(this.SESSIONS_REFERENCE)
-    .orderByChild('tid')
-    .equalTo(tid)
-    .once('value')
-    .then(function(snapshot) {
-      var sessions = snapshot.val();
-      console.log(sessions);
-      return sessions;
-    });
-  }
+      .orderByChild('uid')
+      .equalTo(uid)
+      .once('value')
+      .then(function(snapshot) {
+        var sessions = snapshot.val();
+        // console.log(sessions);
+        return sessions;
+      });
+  };
 
   this.createSession = function(tid, uid, rate, duration) {
     if (tid && uid && rate && duration) {
@@ -37,13 +24,13 @@ exports.SessionService = function() {
       var sid = newSession.key;
 
       var newSessionData = {
-        tid : tid,
-        uid : uid,
-        rate : rate,
-        duration : duration,
+        tid: tid,
+        uid: uid,
+        rate: rate,
+        duration: duration,
         totalprice: duration * rate,
-        status : this.PENDING
-      }
+        status: this.PENDING
+      };
 
       var updates = {};
       updates[this.SESSIONS_REFERENCE + sid] = newSessionData;
@@ -51,19 +38,23 @@ exports.SessionService = function() {
       return sid;
     }
     return null;
-  }
+  };
 
   this.acceptSession = function(sid) {
+    const accepted =this.ACCEPTED;
     var ref = firebase.database().ref(this.SESSIONS_REFERENCE + sid);
     ref.update({
-      status : this.ACCEPTED
+      status: accepted
     });
-  }
+    return accepted;
+  };
 
   this.rejectSession = function(sid) {
+    const rejected =this.REJECTED;
     var ref = firebase.database().ref(this.SESSIONS_REFERENCE + sid);
     ref.update({
-      status : this.REJECTED
+      status: rejected
     });
-  }
-}
+    return rejected;
+  };
+};
