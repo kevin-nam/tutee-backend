@@ -23,6 +23,7 @@ var post = require('./routes/post');
 var session = require('./routes/session');
 var search = require('./routes/search');
 var messaging = require('./routes/messaging');
+var connection = require('./routes/connection');
 
 var app = express();
 
@@ -48,6 +49,7 @@ app.use('/post', post);
 app.use('/session', session);
 app.use('/search', search);
 app.use('/messaging', messaging);
+app.use('/connection', connection);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
