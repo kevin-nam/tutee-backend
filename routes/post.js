@@ -18,6 +18,12 @@ router.post('/get/list', function(req, res, next) {
   });
 });
 
+router.get('/get/list/user/:uid', function(req, res, next) {
+  postService.getAllPostsFromUid(req.params.uid).then(function(result) {
+    res.send(result);
+  });
+});
+
 router.post('/update', function(req, res, next) {
   res.send(postService.updatePost(req.body.pid, req.body.uid, req.body.title, req.body.description, req.body.tagString, req.body.type));
 });

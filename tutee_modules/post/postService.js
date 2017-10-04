@@ -22,10 +22,14 @@ exports.createPost = function(uid, title, description, tagString, type) {
       updates['/posts/' + pid] = postData;
       firebase.database().ref().update(updates);
       tagService.updateTags(postData.tagString, pid);
-      return {
-        'post': postData,
-        'pid': pid
-      };
+
+      // Link pid to uid
+      linkPidToUid(uid, pid, function() {
+        return {
+          'post': postData,
+          'pid': pid
+        };
+      });
     }
     return null;
   }
@@ -116,14 +120,98 @@ exports.deletePost = function(pid, callback) {
     if (snapshot.val()) {
       if (pid) {
         tagService.removePid(snapshot.val().tagString, pid);
-        ref.remove();
-        callback('Post Deleted');
+        unlinkPidToUid(snapshot.val().uid, pid, function() {
+          ref.remove();
+          callback('Post Deleted');
+        });
       }
       callback('Post Not Found');
     }
     callback('Post Not Found');
   });
 };
+
+exports.getAllPostsFromUid = function(uid) {
+  return firebase.database().ref('/uidToPid/' + uid).once('value').then(function(snapshot) {
+    if (snapshot.val()) {
+      var pidList = snapshot.val().pidList;
+      return exports.getPostList(pidList);
+    } else {
+      return [];
+    }
+  });
+};
+
+function unlinkPidToUid(uid, pid, callback) {
+  firebase.database().ref('/uidToPid/' + uid).transaction(function(data) {
+    if (!data || !data.pidList) {
+      return data;
+    } else {
+      var index = data.pidList.indexOf(pid);
+      if (index != -1) {
+        data.pidList.splice(index, 1);
+        return data;
+      } else {
+        return;
+      }
+    }
+  }, function(error, committed, snapshot) {
+    if (error) {
+      console.log('Transaction failed abnormally!', error);
+      callback(error);
+    } else if (!committed) {
+      console.log('PID ' + pid + ' does not exist for user ' + uid);
+      var res = {
+        status: 'PID_DOES_NOT_EXIST'
+      };
+      callback(res);
+    } else {
+      console.log('Uid ' + uid + ' successfully unliked with ' + pid);
+      var response = {
+        status: 'SUCCESSFUL',
+        snapshot: snapshot
+      };
+      callback(response);
+    }
+  });
+}
+
+function linkPidToUid(uid, pid, callback) {
+  firebase.database().ref('/uidToPid/' + uid).transaction(function(data) {
+    if (!data || !data.pidList) {
+      var pidList = [pid];
+      return {
+        uid: uid,
+        pidList: pidList
+      };
+    } else {
+      if (data.pidList.indexOf(pid) == -1) {
+        data.pidList.push(pid);
+        return data;
+      } else {
+        return;
+      }
+    }
+  }, function(error, committed, snapshot) {
+    if (error) {
+      console.log('Transaction failed abnormally!', error);
+      callback(error);
+    } else if (!committed) {
+      console.log('PID already exists.');
+      var res = {
+        status: 'PID_ALREADY_EXISTS'
+      };
+      callback(res);
+    } else {
+      console.log('Uid ' + uid + ' successfully linked with ' + pid);
+      var response = {
+        status: 'SUCCESSFUL',
+        snapshot: snapshot
+      };
+      callback(response);
+    }
+  });
+}
 
 exports.parseTags = function(tagString) {
   return helperParseTags(tagString);
