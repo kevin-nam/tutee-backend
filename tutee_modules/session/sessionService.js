@@ -18,6 +18,18 @@ exports.SessionService = function() {
       });
   };
 
+  this.getSessionsByTid = function(tid) {
+    return firebase.database().ref(this.SESSIONS_REFERENCE)
+      .orderByChild('tid')
+      .equalTo(tid)
+      .once('value')
+      .then(function(snapshot) {
+        var sessions = snapshot.val();
+        // console.log(sessions);
+        return sessions;
+      });
+  };
+
   this.createSession = function(tid, uid, rate, duration) {
     if (tid && uid && rate && duration) {
       var newSession = firebase.database().ref(this.SESSIONS_REFERENCE).push();

@@ -56,39 +56,49 @@ describe('Typical CRUD Post Test', function() {
 
   // Test getPost
   it('Given a pid when getting the post then correct post should be retrieved', function(done) {
-    // givenPid();
-    whenGettingPost();
-    this.timeout(5000);
-    thenPostRetrievedFromDatabase(done);
+    this.timeout(30000);
+    setTimeout(function() {
+      // givenPid();
+      whenGettingPost();
+      thenPostRetrievedFromDatabase(done);
+    }, 2000);
   });
 
   // Test updatePost
   it('Given a pid when updating the post then post data is changed', function(done) {
-    this.timeout(5000);
-    // givenPid();
-    whenUpdatingPost();
-    thenPostUpdatedinDatabase(done);
+    this.timeout(30000);
+    setTimeout(function() {
+      // givenPid();
+      whenUpdatingPost();
+      thenPostUpdatedinDatabase(done);
+    }, 4000);
   });
 
   // Test deletePost
   it('Given an existing post when deleting a post then the post should be removed from database', function(done) {
-    this.timeout(3000);
-    // givenExistingPost();
-    whenRemovingPost();
-    thenPostNoLongerExistInDatabase(done);
+    this.timeout(30000);
+    setTimeout(function() {
+      // givenExistingPost();
+      whenRemovingPost();
+      thenPostNoLongerExistInDatabase(done);
+    }, 6000);
   });
 
   // Test getPostList
   it('Given a list of pid\'s when searching for posts then we should get a list of posts associated to the pid\'s.', function(done) {
-    givenaListofPids();
-    whenSearchingtheDatabase();
-    thenlistofPostsisReceived(done);
+    this.timeout(30000);
+    setTimeout(function() {
+      givenaListofPids();
+      whenSearchingtheDatabase();
+      thenlistofPostsisReceived(done);
+    }, 8000);
   });
 });
 
 describe('Null-Case Post Test', function() {
   // Test createPost
   it('Given null post info when creating a post then a post shouldn\'t be created', function(done) {
+    this.timeout(30000);
     givenNullPostInfo();
     whenCreatingPost();
     thenPostDoesNotExistInDatabase(done);
@@ -96,7 +106,7 @@ describe('Null-Case Post Test', function() {
 
   // Test getPost
   it('Given a null pid when getting the post then no post should be retrieved', function(done) {
-    this.timeout(3000);
+    this.timeout(30000);
     // givenNonExistingPid();
     whenGettingPost();
     thenPostDoesNotExistInDatabase(done);
@@ -104,7 +114,7 @@ describe('Null-Case Post Test', function() {
 
   // Test updatePost
   it('Given a null pid when updating the post then no post data is changed', function(done) {
-    this.timeout(3000);
+    this.timeout(30000);
     // givenPid();
     whenUpdatingPost();
     thenPostDoesNotExistInDatabase(done);
@@ -112,10 +122,10 @@ describe('Null-Case Post Test', function() {
 
   // Test deletePost
   it('Given a non-existing post when deleting a post then the post should be removed from db', function(done) {
-    this.timeout(5000);
+    this.timeout(30000);
     // givenNonExistingPost();
     whenRemovingPost();
-    thenPostNoLongerExistInDatabase(done);
+    thenPostDoesNotExistInDatabase(done);
   });
 });
 
@@ -260,15 +270,21 @@ When
 
 function whenCreatingPost() {
   var newpost = postService.createPost(uid, title, description, tags, type1);
-  if (newpost) {
-    pid = newpost.pid;
-  } else {
-    pid = newpost;
-  }
+  setTimeout(function() {
+    console.log('when creating new post: ');
+    console.log(newpost);
+    if (newpost) {
+      pid = newpost.pid;
+    } else {
+      pid = newpost;
+    }
+  }, 2000);
 }
 
 function whenRemovingPost() {
-  postService.deletePost(pid, function(result) { });
+  postService.deletePost(pid, function(result) {
+    console.log(result);
+  });
 }
 
 function whenGettingPost() {
@@ -303,32 +319,35 @@ Then
 
 
 function thenPostExistsInDatabase(done) {
-  firebase.database().ref('posts/' + pid).once('value').then(function(snapshot) {
-    assert.equal(snapshot.val().title, title, 'Title should be the same.');
-    assert.equal(snapshot.val().description, description, 'description should be the same.');
-    assert.equal(snapshot.val().tagString, correctTags, 'Tags should be the same.');
-    assert.equal(snapshot.val().type, type1, 'The type should be the same.');
+  console.log('post exists: ');
+  setTimeout(function() {
+    console.log(pid);
+    firebase.database().ref('posts/' + pid).once('value').then(function(snapshot) {
+      assert.equal(snapshot.val().title, title, 'Title should be the same.');
+      assert.equal(snapshot.val().description, description, 'description should be the same.');
+      assert.equal(snapshot.val().tagString, correctTags, 'Tags should be the same.');
+      assert.equal(snapshot.val().type, type1, 'The type should be the same.');
 
-    done();
-  });
+      done();
+    });
+  }, 3000);
 }
 
 function thenPostDoesNotExistInDatabase(done) {
   setTimeout(function() {
     assert.isNull(pid, 'pid should be null');
-
     done();
-  }, 1000);
+  }, 3000);
 }
 
 function thenPostNoLongerExistInDatabase(done) {
   setTimeout(function() {
+    console.log('DELETING: ' + pid);
     firebase.database().ref('posts/' + pid).once('value').then(function(snapshot) {
       assert.isNull(snapshot.val(), 'Post should not exist');
-
       done();
     });
-  }, 1000);
+  }, 3000);
 }
 
 function thenPostRetrievedFromDatabase(done) {
@@ -343,7 +362,7 @@ function thenPostRetrievedFromDatabase(done) {
 
       done();
     });
-  }, 2000);
+  }, 3000);
 }
 
 function thenPostUpdatedinDatabase(done) {
