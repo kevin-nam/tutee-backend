@@ -24,20 +24,23 @@ exports.createPost = function(uid, title, description, tagString, type) {
       tagService.updateTags(postData.tagString, pid);
 
       // Link pid to uid
-      linkPidToUid(uid, pid, function() {
-        return {
-          'post': postData,
-          'pid': pid
-        };
-      });
+      linkPidToUid(uid, pid);
+
+      return {
+        'post': postData,
+        'pid': pid
+      };
+    } else {
+      console.log('Tag string unexpected: ' + postData.tagString + ' Returning null.');
     }
+  } else {
+    console.log('Title, description or tagString is null');
     return null;
   }
-  return null;
 };
 
 exports.updatePost = function(pid, uid, newTitle, newDesc, newTagString, newType) {
-  if (newTitle !== null && newDesc !== null && newTagString !== null) {
+  if (pid !== null && newTitle !== null && newDesc !== null && newTagString !== null) {
     var updates = {};
 
     var newData = {
@@ -115,20 +118,23 @@ exports.getPostList = function(pidList) {
 };
 
 exports.deletePost = function(pid, callback) {
-  var ref = firebase.database().ref('posts/' + pid);
-  ref.once('value').then(function(snapshot) {
-    if (snapshot.val()) {
-      if (pid) {
-        tagService.removePid(snapshot.val().tagString, pid);
-        unlinkPidToUid(snapshot.val().uid, pid, function() {
+  if (pid) {
+    var ref = firebase.database().ref('posts/' + pid);
+    ref.once('value').then(function(snapshot) {
+      if (snapshot.val()) {
+        if (pid) {
+          tagService.removePid(snapshot.val().tagString, pid);
+          unlinkPidToUid(snapshot.val().uid, pid);
           ref.remove();
           callback('Post Deleted');
-        });
+        }
+        callback('Post Not Found');
       }
       callback('Post Not Found');
-    }
-    callback('Post Not Found');
-  });
+    });
+  } else {
+    callback('Null Post');
+  }
 };
 
 exports.getAllPostsFromUid = function(uid) {
@@ -142,7 +148,7 @@ exports.getAllPostsFromUid = function(uid) {
   });
 };
 
-function unlinkPidToUid(uid, pid, callback) {
+function unlinkPidToUid(uid, pid) {
   firebase.database().ref('/uidToPid/' + uid).transaction(function(data) {
     if (!data || !data.pidList) {
       return data;
@@ -158,25 +164,15 @@ function unlinkPidToUid(uid, pid, callback) {
   }, function(error, committed, snapshot) {
     if (error) {
       console.log('Transaction failed abnormally!', error);
-      callback(error);
     } else if (!committed) {
       console.log('PID ' + pid + ' does not exist for user ' + uid);
-      var res = {
-        status: 'PID_DOES_NOT_EXIST'
-      };
-      callback(res);
     } else {
       console.log('Uid ' + uid + ' successfully unliked with ' + pid);
-      var response = {
-        status: 'SUCCESSFUL',
-        snapshot: snapshot
-      };
-      callback(response);
     }
   });
 }
 
-function linkPidToUid(uid, pid, callback) {
+function linkPidToUid(uid, pid) {
   firebase.database().ref('/uidToPid/' + uid).transaction(function(data) {
     if (!data || !data.pidList) {
       var pidList = [pid];
@@ -195,20 +191,10 @@ function linkPidToUid(uid, pid, callback) {
   }, function(error, committed, snapshot) {
     if (error) {
       console.log('Transaction failed abnormally!', error);
-      callback(error);
     } else if (!committed) {
       console.log('PID already exists.');
-      var res = {
-        status: 'PID_ALREADY_EXISTS'
-      };
-      callback(res);
     } else {
       console.log('Uid ' + uid + ' successfully linked with ' + pid);
-      var response = {
-        status: 'SUCCESSFUL',
-        snapshot: snapshot
-      };
-      callback(response);
     }
   });
 }

@@ -18,8 +18,8 @@ if (!firebase.apps.length) {
 }
 
 // Variables
-var tid = 'testtutor';
-var uid = 'testtutee';
+var tid = 'testingtutor';
+var uid = 'testingtutee';
 var sid = [];
 var sessionService;
 var rate;
@@ -28,7 +28,7 @@ var SESSIONS_REFERENCE = 'sessions/';
 
 // Login Test
 describe('Sessions Request Test', function() {
-  this.timeout(5000);
+  this.timeout(10000);
   beforeEach(function(done) {
     sessionService = new rq.SessionService();
     setTimeout(function() {
@@ -92,8 +92,8 @@ describe('Sessions Request Test', function() {
 
 // Given
 function givenATutorAndATutee() {
-  tid = 'testtutor';
-  uid = 'testtutee';
+  tid = 'testingtutor';
+  uid = 'testingtutee';
 }
 
 // When
@@ -132,13 +132,16 @@ function whenTheTutorRequestAnInvalidSession() {
 // Then
 function thenTheSessionsForTuteeAreAllRetrieved(status, done) {
   sessionService.getSessions(uid).then(function(sessions) {
+    console.log(sessions);
     assert.equal(Object.keys(sessions).length, sid.length, 'size of sessions should be equal to ' + sid.length);
     thenTheSessionExistsInTheDatabase(status, done);
   });
 }
 
 function thenTheSessionsForTutorAreAllRetrieved(status, done) {
-  sessionService.getSessions(tid).then(function(sessions) {
+  console.log(tid);
+  sessionService.getSessionsByTid(tid).then(function(sessions) {
+    console.log(sessions);
     assert.equal(Object.keys(sessions).length, sid.length, 'size of sessions should be equal to ' + sid.length);
     thenTheSessionExistsInTheDatabase(status, done);
   });
@@ -154,7 +157,7 @@ function thenThereAreNoSessionsForTuteeRetrieved(done) {
 }
 
 function thenThereAreNoSessionsForTutorRetrieved(done) {
-  sessionService.getSessions(tid).then(function(sessions) {
+  sessionService.getSessionsByTid(tid).then(function(sessions) {
     if (sessions) {
       assert.fail(sessions, null, 'There should not be any sessions yet there are ' + Object.keys(sessions).length);
     }
