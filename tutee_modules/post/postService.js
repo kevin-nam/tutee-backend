@@ -15,6 +15,7 @@ exports.createPost = function(uid, title, description, tagString, type) {
       tagString: helperParseTags(tagString),
       type: type,
       date: newDate,
+      pid: pid
     };
     // console.log(postData);
     if (postData.tagString) {
@@ -50,6 +51,7 @@ exports.updatePost = function(pid, uid, newTitle, newDesc, newTagString, newType
       tagString: helperParseTags(newTagString),
       type: newType,
       date: new Date(),
+      pid: pid
     };
 
     if (newData.tagString) {
@@ -80,6 +82,7 @@ exports.getPost = function(pid) {
         tagString: snapshot.val().tagString,
         type: snapshot.val().type,
         date: snapshot.val().date,
+        pid: pid
       };
       // console.log(data);
       return data;
