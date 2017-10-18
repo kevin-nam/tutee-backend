@@ -4,13 +4,18 @@ var tagService = require('../tag/tagService.js');
 exports.searchPosts = function(searchTags) {
   var parsedTags = exports.parseSearchTags(searchTags);
   var postList;
+  var emptyList = [];
   return tagService.getPidList(parsedTags, function(pids) {
     // console.log(pids);
-    return postService.getPostList(pids).then(function(list) {
-      postList = list;
-      // console.log(postList);
-      return postList;
-    });
+    if (pids.length != 0) {
+      return postService.getPostList(pids).then(function(list) {
+        postList = list;
+        // console.log(postList);
+        return postList;
+      });
+    } else {
+      return emptyList;
+    }
   });
 };
 
