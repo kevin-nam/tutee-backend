@@ -39,7 +39,12 @@ exports.updateTags = function(tagString, pid) {
   var tags;
   tags = exports.tokenizeTags(tagString);
   tags.forEach(function(element) {
-    firebase.database().ref('/tags/').child(element).child(pid).set(pid);
+    firebase
+      .database()
+      .ref('/tags/')
+      .child(element)
+      .child(pid)
+      .set(pid);
   });
 };
 
@@ -48,23 +53,31 @@ exports.removePid = function(tagString, pid) {
   var tags;
   tags = exports.tokenizeTags(tagString);
   tags.forEach(function(element) {
-    firebase.database().ref('/tags/').child(element).child(pid).set({});
+    firebase
+      .database()
+      .ref('/tags/')
+      .child(element)
+      .child(pid)
+      .set({});
   });
 };
 
 exports.getPidListForATag = function(tag) {
   var ref = firebase.database().ref('/tags/');
-  return ref.child(tag).once('value').then(function(snapshot) {
-    var pidList = new Set();
-    if (snapshot.val()) {
-      values = Object.keys(snapshot.val());
-      values.forEach(function(pid) {
-        pidList.add(pid);
-      });
-      return Array.from(pidList);
-    }
-    return null;
-  });
+  return ref
+    .child(tag)
+    .once('value')
+    .then(function(snapshot) {
+      var pidList = new Set();
+      if (snapshot.val()) {
+        values = Object.keys(snapshot.val());
+        values.forEach(function(pid) {
+          pidList.add(pid);
+        });
+        return Array.from(pidList);
+      }
+      return null;
+    });
 };
 
 exports.getPidList = function(tagString, callback) {
@@ -73,13 +86,14 @@ exports.getPidList = function(tagString, callback) {
   var pidList = new Set();
   var tags = exports.tokenizeTags(tagString);
   // console.log(tags)
-  var ref = firebase.database().ref('/tags/');
   if (tags) {
-    for (var i=0; i < tags.length; i++) {
+    for (var i = 0; i < tags.length; i++) {
       container = exports.getPidListForATag(tags[i]).then(function(pids) {
-        pids.forEach(function(pid) {
-          pidList.add(pid);
-        });
+        if (pids != null) {
+          pids.forEach(function(pid) {
+            pidList.add(pid);
+          });
+        }
         if (++counter == tags.length) {
           return callback(Array.from(pidList));
         }
