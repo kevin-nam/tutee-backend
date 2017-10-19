@@ -5,7 +5,14 @@ var connectionService = require('../tutee_modules/connection/connectionService.j
 router.get('/get/:uid', function(req, res, next) {
   console.log(req.params.uid);
   connectionService.getConnectionsFromUid(req.params.uid, function(data) {
-    res.send(data);
+    if (data) {
+      res.send(data);
+    } else {
+      res.send({
+        connections: [],
+        uid: req.params.uid
+      });
+    }
   });
 });
 
