@@ -25,6 +25,15 @@ router.post('/create', function(req, res, next) {
   });
 });
 
+router.post('/approve', function(req, res, next) {
+  var uid1 = req.body.uid1;
+  var uid2 = req.body.uid2;
+  console.log('Attempting to approve connection between ' + uid1 + ' and ' + uid2);
+  connectionService.approveConnection(uid1, uid2, function(data) {
+    res.send(data);
+  });
+});
+
 router.post('/delete', function(req, res, next) {
   var uid1 = req.body.uid1;
   var uid2 = req.body.uid2;

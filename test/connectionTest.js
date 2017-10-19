@@ -128,8 +128,8 @@ function thenConnectionExistsInDatabase(uid1, uid2, size, done) {
     console.log(snapshot.val().connections);
     assert.equal(snapshot.val().uid, uid1, 'uid should be the same.');
     assert.isNotNull(snapshot.val().connections, 'connections should be not null');
-    assert.equal(snapshot.val().connections.length, size, 'size should be the same.');
-    assert.notEqual(snapshot.val().connections.indexOf(uid2), -1, uid2 + ' should be a connection.');
+    assert.equal(Object.keys(snapshot.val().connections).length, size, 'size should be the same.');
+    assert.notEqual(snapshot.val().connections[uid2], null, uid2 + ' should be a connection.');
     done();
   });
 }
@@ -139,7 +139,7 @@ function thenConnectionDoesNotExistInDatabase(uid1, uid2, done) {
     console.log(snapshot.val());
     assert.equal(snapshot.val().uid, uid1, 'uid should be the same.');
     if (snapshot.val().connections) {
-      assert.equal(snapshot.val().connections.indexOf(uid2), -1, uid2 + ' should not be a connection.');
+      assert.equal(snapshot.val().connections[uid2], null, uid2 + ' should not be a connection.');
     }
     done();
   });
@@ -149,7 +149,7 @@ function thenTheConnectionIsValid(data, uid, size, done) {
   console.log(data);
   console.log('&&&&&&&');
   assert.equal(data.uid, uid, 'uid should be the same.');
-  assert.equal(data.connections.length, size, 'size should be the same.');
+  assert.equal(Object.keys(data.connections).length, size, 'size should be the same.');
   done();
 }
 
