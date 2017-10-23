@@ -155,14 +155,14 @@ function addConnectionToFirebase(uid1, uid2, callback) {
     // If no data or no connections
     if (!data || !data.connections) {
       var connections = {};
-      connections[uid2] = {uid: uid2, isPending: true, isRequesting: true};
+      connections[uid2] = {uid: uid2, isPending: true, isRequesting: true, isTutor: false};
       return {
         uid: uid1,
         connections: connections
       };
     } else {
       if (!data.connections[uid2]) {
-        data.connections[uid2] = {uid: uid2, isPending: true, isRequesting: true};
+        data.connections[uid2] = {uid: uid2, isPending: true, isRequesting: true, isTutor: false};
         return data;
       } else {
         return;
@@ -172,26 +172,25 @@ function addConnectionToFirebase(uid1, uid2, callback) {
     if (error) {
       console.log('Transaction failed abnormally!', error);
       callback(error);
-    } else if (!committed) {
-      console.log('Connection already exists.');
-      var res = {
-        status: 'CONNECTION_ALREADY_EXISTS'
-      };
-      callback(res);
     } else {
       firebase.database().ref(exports.CONNECTION_REFERENCE + uid2).transaction(function(data) {
         if (!data || !data.connections) {
           var connections = {};
-          connections[uid1] = {uid: uid1, isPending: true, isRequesting: false};
+          connections[uid1] = {uid: uid1, isPending: true, isRequesting: false, isTutor: true};
           return {
             uid: uid2,
             connections: connections
           };
         } else {
           if (!data.connections[uid1]) {
-            data.connections[uid1] = {uid: uid1, isPending: true, isRequesting: false};
+            data.connections[uid1] = {uid: uid1, isPending: true, isRequesting: false, isTutor: true};
             return data;
           } else {
+            // if connection exists but uid2 is a tutee
+            if (!data.connections[uid1].isTutor) {
+              data.connections[uid1] = {uid: uid1, isPending: false, isRequesting: false, isTutor: true};
+              return data;
+            }
             return;
           }
         }
@@ -200,7 +199,7 @@ function addConnectionToFirebase(uid1, uid2, callback) {
           console.log('Transaction failed abnormally!', error);
           callback(error);
         } else {
-          console.log('Connection successfully added between ' + uid1 + ' and ' + uid2);
+          console.log('Connection successfully added between tutee:' + uid1 + ' and tutor:' + uid2);
           var response = {
             status: 'SUCCESSFUL',
             uid1: snapshot1,
