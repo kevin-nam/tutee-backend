@@ -24,6 +24,7 @@ var session = require('./routes/session');
 var search = require('./routes/search');
 var messaging = require('./routes/messaging');
 var connection = require('./routes/connection');
+var notifications = require('./routes/notifications');
 
 var app = express();
 
@@ -50,6 +51,7 @@ app.use('/session', session);
 app.use('/search', search);
 app.use('/messaging', messaging);
 app.use('/connection', connection);
+app.use('/notifications', notifications);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
