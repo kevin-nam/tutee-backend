@@ -26,7 +26,7 @@ exports.sendMessage = function(uidFrom, uidTutor, uidTutee, content, callback) {
       // console.log(snapshot.val());
 
       var uidTo = uidFrom == uidTutor ? uidTutee : uidTutor;
-      notificationService.sendNotification(uidTo, uidFrom, 'NEW_MESSAGE');
+      notificationService.sendNotification(uidTo, uidFrom, 'NEW_MESSAGE', function() {});
       callback(snapshot.val().messages[snapshot.val().messages.length-1]);
     }
   });
