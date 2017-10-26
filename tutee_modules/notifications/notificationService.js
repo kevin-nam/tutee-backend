@@ -7,7 +7,7 @@ const ACCEPTED_SESSION_REQUEST = 'ACCEPTED_SESSION_REQUEST';
 const ACCEPTED_CONNECTION_REQUEST = 'ACCEPTED_CONNECTION_REQUEST';
 const NEW_MESSAGE = 'NEW_MESSAGE';
 
-exports.sendNotification = function(uid, uidFrom, type, content, callback) {
+exports.sendNotification = function(uid, uidFrom, type, callback) {
   userService.getUserData(uidFrom).then(function(user) {
     var username = uidFrom;
     if (user) {
@@ -18,8 +18,7 @@ exports.sendNotification = function(uid, uidFrom, type, content, callback) {
       function(data) {
         if (data === null || !data.notifications) {
           var notification = exports.parseAndCreateNotification(uid, uidFrom, username,
-            type,
-            content);
+            type);
 
           return {
             uid: uid,
@@ -29,8 +28,7 @@ exports.sendNotification = function(uid, uidFrom, type, content, callback) {
           console.log('exists');
           var notification = exports.parseAndCreateNotification(uid, uidFrom,
             username,
-            type,
-            content);
+            type);
 
           data.notifications.push(notification);
 
@@ -48,8 +46,7 @@ exports.sendNotification = function(uid, uidFrom, type, content, callback) {
   });
 };
 
-exports.parseAndCreateNotification = function(uid, uidFrom, username, type,
-  content) {
+exports.parseAndCreateNotification = function(uid, uidFrom, username, type) {
   if (type == NEW_CONNECTION_REQUEST) {
     return {
       uidFrom: uidFrom,

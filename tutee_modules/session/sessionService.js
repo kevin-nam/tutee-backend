@@ -1,4 +1,5 @@
 var firebase = require('firebase');
+var notificationService = require('../notifications/notificationService.js');
 
 exports.SessionService = function() {
   this.PENDING = 'PENDING';
@@ -47,6 +48,7 @@ exports.SessionService = function() {
       var updates = {};
       updates[this.SESSIONS_REFERENCE + sid] = newSessionData;
       firebase.database().ref().update(updates);
+      notificationService.sendNotification(uid, tid, 'NEW_SESSION_REQUEST');
       return sid;
     }
     return null;
@@ -57,6 +59,15 @@ exports.SessionService = function() {
     var ref = firebase.database().ref(this.SESSIONS_REFERENCE + sid);
     ref.update({
       status: accepted
+    });
+
+    ref.once('value').then(function(snapshot) {
+      var session = snapshot.val();
+
+      if (session) {
+        notificationService.sendNotification(session.tid, session.uid,
+          'ACCEPTED_SESSION_REQUEST');
+      }
     });
     return accepted;
   };
