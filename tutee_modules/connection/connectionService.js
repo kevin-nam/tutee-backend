@@ -138,8 +138,8 @@ function approveConnectionOnFirebase(uid1, uid2, callback) {
           console.log('Transaction failed abnormally!', error);
           callback(error);
         } else {
-          notificationService.sendNotification(uid1, uid2, 'ACCEPTED_CONNECTION_REQUEST');
-          notificationService.sendNotification(uid2, uid1, 'ACCEPTED_CONNECTION_REQUEST');
+          notificationService.sendNotification(uid1, uid2, 'ACCEPTED_CONNECTION_REQUEST', function() {});
+          notificationService.sendNotification(uid2, uid1, 'ACCEPTED_CONNECTION_REQUEST', function() {});
           console.log('Connection successfully approved between ' + uid1 + ' and ' + uid2);
           var response = {
             status: 'SUCCESSFUL',
@@ -202,7 +202,7 @@ function addConnectionToFirebase(uid1, uid2, callback) {
           console.log('Transaction failed abnormally!', error);
           callback(error);
         } else {
-          notificationService.sendNotification(uid2, uid1, 'NEW_CONNECTION_REQUEST');
+          notificationService.sendNotification(uid2, uid1, 'NEW_CONNECTION_REQUEST', function() {});
           console.log('Connection successfully added between tutee:' + uid1 + ' and tutor:' + uid2);
           var response = {
             status: 'SUCCESSFUL',

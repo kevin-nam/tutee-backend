@@ -48,7 +48,7 @@ exports.SessionService = function() {
       var updates = {};
       updates[this.SESSIONS_REFERENCE + sid] = newSessionData;
       firebase.database().ref().update(updates);
-      notificationService.sendNotification(uid, tid, 'NEW_SESSION_REQUEST');
+      notificationService.sendNotification(uid, tid, 'NEW_SESSION_REQUEST', function() {});
       return sid;
     }
     return null;
@@ -66,7 +66,7 @@ exports.SessionService = function() {
 
       if (session) {
         notificationService.sendNotification(session.tid, session.uid,
-          'ACCEPTED_SESSION_REQUEST');
+          'ACCEPTED_SESSION_REQUEST', function() {});
       }
     });
     return accepted;
