@@ -1,4 +1,5 @@
 var firebase = require('firebase');
+var notificationService = require('../notifications/notificationService.js');
 
 exports.sendMessage = function(uidFrom, uidTutor, uidTutee, content, callback) {
   firebase.database().ref('messages/' + uidTutor + '-' + uidTutee).transaction(function(currentMsg) {
@@ -23,6 +24,9 @@ exports.sendMessage = function(uidFrom, uidTutor, uidTutee, content, callback) {
     } else {
       // console.log('Message Sent');
       // console.log(snapshot.val());
+
+      var uidTo = uidFrom == uidTutor ? uidTutee : uidTutor;
+      notificationService.sendNotification(uidTo, uidFrom, 'NEW_MESSAGE');
       callback(snapshot.val().messages[snapshot.val().messages.length-1]);
     }
   });

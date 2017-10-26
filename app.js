@@ -25,6 +25,7 @@ var search = require('./routes/search');
 var messaging = require('./routes/messaging');
 var connection = require('./routes/connection');
 var notifications = require('./routes/notifications');
+var status = require('./routes/status');
 
 var app = express();
 
@@ -52,6 +53,7 @@ app.use('/search', search);
 app.use('/messaging', messaging);
 app.use('/connection', connection);
 app.use('/notifications', notifications);
+app.use('/', status);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
