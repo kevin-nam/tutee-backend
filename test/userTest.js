@@ -21,7 +21,6 @@ if (!firebase.apps.length) {
 Global Variables
 ***********************************************************************/
 
-
 var uid = 'hello';
 var username = 'test username';
 var email = 'test email';
@@ -33,24 +32,28 @@ var newEmail = 'new test email';
 var new_profile_picture = 'new_test_picture';
 var newBio = 'This is the newest Bio';
 var newRating = 300;
-
+var newRatingSum = 300;
+var newNumOfRatings = 1;
 
 /** ********************************************************************
 Tests - Alternate Flows
 ***********************************************************************/
 
-
 // Read User data
 describe('CRUD User Tests', function() {
   // Test createUser
-  it('Given a UId, when creating a user, then the user should exist.', function(done) {
+  it('Given a UId, when creating a user, then the user should exist.', function(
+    done
+  ) {
     givenAuid();
     whenCreatingTheUser();
     thenTheUserExists(done);
   });
 
   // Test getUserData
-  it('Given a Uid, when getting the user then the user should exist.', function(done) {
+  it('Given a Uid, when getting the user then the user should exist.', function(
+    done
+  ) {
     givenAuid();
     this.timeout(5000);
     whenGettingTheUser();
@@ -58,36 +61,52 @@ describe('CRUD User Tests', function() {
   });
 
   // Test updateUser
-  it('Given a Uid associated to a user, when updating their info then the user\'s info should be updated.', function(done) {
+  it('Given a Uid associated to a user, when updating their info then the user\'s info should be updated.', function(
+    done
+  ) {
     givenAuid();
     whenUpdatingTheirInfo();
     thenTheInfoShouldUpdate(done);
+  });
+
+  // Test updateRating
+  it('Given a Uid associated to a user, when updating their rating info then the user\'s rating info should be updated.', function(
+    done
+  ) {
+    givenAuid();
+    whenUpdatingTheirRatingInfo();
+    thenTheRatingInfoShouldUpdate(done);
   });
 });
 
 describe('Null-Value Tests', function() {
   // Test nullBio
-  it('Given null bio info when creating a user then the user should not be created.', function(done) {
+  it('Given null bio info when creating a user then the user should not be created.', function(
+    done
+  ) {
     givenAuidAndNullBio();
     whenCreatingTheUser();
     thenUserDoesNotExistInDatabase(done);
   });
 
   // Test nullEmail
-  it('Given null email info when creating a user then the user should not be created', function(done) {
+  it('Given null email info when creating a user then the user should not be created', function(
+    done
+  ) {
     givenAuidAndNullEmail();
     whenCreatingTheUser();
     thenUserDoesNotExistInDatabase(done);
   });
 
   // Test falseApproval
-  it('Given null username info when creating a user then the user should not be created', function(done) {
+  it('Given null username info when creating a user then the user should not be created', function(
+    done
+  ) {
     givenAuidAndNullUsername();
     whenCreatingTheUser();
     thenUserDoesNotExistInDatabase(done);
   });
 });
-
 
 /** ********************************************************************
 Given
@@ -127,7 +146,17 @@ function whenGettingTheUser() {
 }
 
 function whenUpdatingTheirInfo() {
-  userService.updateUser(uid, newUsername, newEmail, new_profile_picture, newBio, newRating);
+  userService.updateUser(
+    uid,
+    newUsername,
+    newEmail,
+    new_profile_picture,
+    newBio
+  );
+}
+
+function whenUpdatingTheirRatingInfo() {
+  userService.updateRating(uid, newRating, newRatingSum, newNumOfRatings);
 }
 
 /** ********************************************************************
@@ -135,50 +164,125 @@ Then
 ***********************************************************************/
 
 function thenTheUserExists(done) {
-  firebase.database().ref('users/' + uid).once('value').then(function(snapshot) {
-    assert.equal(snapshot.val().bio, bio, 'Not the same bio.');
-    assert.equal(snapshot.val().rating, 0, 'Not the same rating.');
-    assert.equal(snapshot.val().email, email, 'Not the same email.');
-    assert.equal(snapshot.val().profile_picture, profile_picture, 'Not the same profile picture.');
-    assert.equal(snapshot.val().username, username, 'Not the same username.');
+  firebase
+    .database()
+    .ref('users/' + uid)
+    .once('value')
+    .then(function(snapshot) {
+      assert.equal(snapshot.val().bio, bio, 'Not the same bio.');
+      assert.equal(snapshot.val().rating, -1, 'Not the same rating.');
+      assert.equal(snapshot.val().email, email, 'Not the same email.');
+      assert.equal(
+        snapshot.val().profile_picture,
+        profile_picture,
+        'Not the same profile picture.'
+      );
+      assert.equal(snapshot.val().username, username, 'Not the same username.');
+      assert.equal(snapshot.val().ratingSum, 0, 'Not the same ratingSum.');
+      assert.equal(
+        snapshot.val().numOfRatings,
+        0,
+        'Not the same number of ratings'
+      );
 
-    done();
-  });
+      done();
+    });
 }
 
 function thenTheUserShouldExist(done) {
   setTimeout(function() {
-    firebase.database().ref('users/' + uid).once('value').then(function(snapshot) {
-      assert.isNotNull(snapshot.val(), 'User should exist.');
-      assert.equal(snapshot.val().bio, userData.bio, 'Not the same bio.');
-      assert.equal(snapshot.val().rating, userData.rating, 'Not the same rating.');
-      assert.equal(snapshot.val().email, userData.email, 'Not the same email.');
-      assert.equal(snapshot.val().profile_picture, userData.profile_picture, 'Not the same profile picture.');
-      assert.equal(snapshot.val().username, userData.username, 'Not the same username.');
+    firebase
+      .database()
+      .ref('users/' + uid)
+      .once('value')
+      .then(function(snapshot) {
+        assert.isNotNull(snapshot.val(), 'User should exist.');
+        assert.equal(snapshot.val().bio, userData.bio, 'Not the same bio.');
+        assert.equal(
+          snapshot.val().rating,
+          userData.rating,
+          'Not the same rating.'
+        );
+        assert.equal(
+          snapshot.val().email,
+          userData.email,
+          'Not the same email.'
+        );
+        assert.equal(
+          snapshot.val().profile_picture,
+          userData.profile_picture,
+          'Not the same profile picture.'
+        );
+        assert.equal(
+          snapshot.val().username,
+          userData.username,
+          'Not the same username.'
+        );
 
-      done();
-    });
+        done();
+      });
   }, 1000);
 }
 
 function thenTheInfoShouldUpdate(done) {
-  firebase.database().ref('users/' + uid).once('value').then(function(snapshot) {
-    assert.isNotNull(snapshot.val(), 'User should exist.');
-    assert.equal(snapshot.val().bio, newBio, 'Bio should be the same.');
-    assert.equal(snapshot.val().rating, newRating, 'Rating should be the same.');
-    assert.equal(snapshot.val().email, newEmail, 'Email should be the same.');
-    assert.equal(snapshot.val().profile_picture, new_profile_picture, 'Profile picture should be the same.');
-    assert.equal(snapshot.val().username, newUsername, 'Username should be the same.');
+  firebase
+    .database()
+    .ref('users/' + uid)
+    .once('value')
+    .then(function(snapshot) {
+      assert.isNotNull(snapshot.val(), 'User should exist.');
+      assert.equal(snapshot.val().bio, newBio, 'Bio should be the same.');
+      assert.equal(snapshot.val().email, newEmail, 'Email should be the same.');
+      assert.equal(
+        snapshot.val().profile_picture,
+        new_profile_picture,
+        'Profile picture should be the same.'
+      );
+      assert.equal(
+        snapshot.val().username,
+        newUsername,
+        'Username should be the same.'
+      );
 
+      done();
+    });
+}
 
-    done();
-  });
+function thenTheRatingInfoShouldUpdate(done) {
+  firebase
+    .database()
+    .ref('users/' + uid)
+    .once('value')
+    .then(function(snapshot) {
+      assert.isNotNull(snapshot.val(), 'User should exist.');
+      assert.equal(
+        snapshot.val().rating,
+        newRating,
+        'Rating should be the same.'
+      );
+      assert.equal(
+        snapshot.val().ratingSum,
+        newRatingSum,
+        'Sum should be the same.'
+      );
+      assert.equal(
+        snapshot.val().numOfRatings,
+        newNumOfRatings,
+        'Number of ratings should be the same.'
+      );
+
+      done();
+    });
 }
 
 function thenUserDoesNotExistInDatabase(done) {
-  firebase.database().ref('users/' + uid).once('value').then(function(snapshot) {
-    assert.isNull(snapshot.val(), 'User should be null.');
+  firebase
+    .database()
+    .ref('users/' + uid)
+    .once('value')
+    .then(function(snapshot) {
+      assert.isNull(snapshot.val(), 'User should be null.');
 
-    done();
-  });
+      done();
+    });
 }
