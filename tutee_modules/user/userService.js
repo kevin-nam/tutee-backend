@@ -1,67 +1,81 @@
 var firebase = require('firebase');
 
 exports.getUserData = function(uid) {
-  return firebase.database().ref('users/' + uid).once('value').then(function(snapshot) {
-    return snapshot.val();
-  });
+  return firebase
+    .database()
+    .ref('users/' + uid)
+    .once('value')
+    .then(function(snapshot) {
+      return snapshot.val();
+    });
 };
 
 exports.createUser = function(uid, username, email, profile_picture, bio) {
   if (username !== null && email !== null && bio !== null) {
     if (profile_picture == null) {
-      profile_picture = 'https://www.vccircle.com/wp-content/uploads/2017/03/default-profile.png';
+      profile_picture =
+        'https://www.vccircle.com/wp-content/uploads/2017/03/default-profile.png';
     }
-    firebase.database().ref('users/' + uid).set({
-      username: username,
-      email: email,
-      profile_picture: profile_picture,
-      bio: bio,
-      rating: 0
-    });
+    firebase
+      .database()
+      .ref('users/' + uid)
+      .set({
+        username: username,
+        email: email,
+        profile_picture: profile_picture,
+        bio: bio,
+        rating: -1,
+        ratingSum: 0,
+        numOfRatings: 0
+      });
     return {
       username: username,
       email: email,
       profile_picture: profile_picture,
       bio: bio,
-      rating: 0
+      rating: -1,
+      ratingSum: 0,
+      numOfRatings: 0
     };
   }
   return null;
 };
 
-
-/* exports.getTutorData = function(uid) {
-    return firebase.database().ref('tutor/' +uid).once('value').then(function(snapshot) {
-        if(snapshot.val()) {
-            var tutorData = {username: "", email: "", profile_picture: "", bio: "", rating: ""};
-
-            var userPromise = exports.getUserData(uid);
-            tutorData = userPromise.then(function(user) {
-                var tempTutorData = {username: "", email: "", profile_picture: "", bio: "", rating: ""};
-                tempTutorData.username = user.username;
-                tempTutorData.email = user.email;
-                tempTutorData.profile_picture = user.profile_picture;
-                tempTutorData.bio = snapshot.val().bio;
-                tempTutorData.rating = snapshot.val().rating;
-                return tempTutorData;
-            });
-            return tutorData;
-        }
-        return null;
-    });
-};
-*/
-exports.updateUser = function(uid, newUsername, newEmail, new_profile_picture, newBio, newRating) {
+exports.updateUser = function(
+  uid,
+  newUsername,
+  newEmail,
+  new_profile_picture,
+  newBio
+) {
   var updates = {};
-  var newData =
-        {
-          username: newUsername,
-          email: newEmail,
-          profile_picture: new_profile_picture,
-          bio: newBio,
-          rating: newRating
-        };
+  var newData = {
+    username: newUsername,
+    email: newEmail,
+    profile_picture: new_profile_picture,
+    bio: newBio
+  };
   updates['/users/' + uid] = newData;
-  firebase.database().ref().update(updates);
+  firebase
+    .database()
+    .ref()
+    .child('/users/' + uid)
+    .update(newData);
+  return updates;
+};
+
+exports.updateRating = function(uid, newRating, newSum, newNumOfRatings) {
+  var updates = {};
+  var newData = {
+    rating: newRating,
+    ratingSum: newSum,
+    numOfRatings: newNumOfRatings
+  };
+  updates['/users/' + uid] = newData;
+  firebase
+    .database()
+    .ref()
+    .child('/users/' + uid)
+    .update(newData);
   return updates;
 };
