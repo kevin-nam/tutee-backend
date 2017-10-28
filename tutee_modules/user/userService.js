@@ -46,17 +46,27 @@ exports.updateUser = function(
   newUsername,
   newEmail,
   new_profile_picture,
-  newBio,
-  newRating,
-  newSum,
-  newNumOfRatings
+  newBio
 ) {
   var updates = {};
   var newData = {
     username: newUsername,
     email: newEmail,
     profile_picture: new_profile_picture,
-    bio: newBio,
+    bio: newBio
+  };
+  updates['/users/' + uid] = newData;
+  firebase
+    .database()
+    .ref()
+    .child('/users/' + uid)
+    .update(newData);
+  return updates;
+};
+
+exports.updateRating = function(uid, newRating, newSum, newNumOfRatings) {
+  var updates = {};
+  var newData = {
     rating: newRating,
     ratingSum: newSum,
     numOfRatings: newNumOfRatings
@@ -65,6 +75,7 @@ exports.updateUser = function(
   firebase
     .database()
     .ref()
-    .update(updates);
+    .child('/users/' + uid)
+    .update(newData);
   return updates;
 };

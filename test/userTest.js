@@ -68,6 +68,15 @@ describe('CRUD User Tests', function() {
     whenUpdatingTheirInfo();
     thenTheInfoShouldUpdate(done);
   });
+
+  // Test updateRating
+  it('Given a Uid associated to a user, when updating their rating info then the user\'s rating info should be updated.', function(
+    done
+  ) {
+    givenAuid();
+    whenUpdatingTheirRatingInfo();
+    thenTheRatingInfoShouldUpdate(done);
+  });
 });
 
 describe('Null-Value Tests', function() {
@@ -142,11 +151,12 @@ function whenUpdatingTheirInfo() {
     newUsername,
     newEmail,
     new_profile_picture,
-    newBio,
-    newRating,
-    newRatingSum,
-    newNumOfRatings
+    newBio
   );
+}
+
+function whenUpdatingTheirRatingInfo() {
+  userService.updateRating(uid, newRating, newRatingSum, newNumOfRatings);
 }
 
 /** ********************************************************************
@@ -222,11 +232,6 @@ function thenTheInfoShouldUpdate(done) {
     .then(function(snapshot) {
       assert.isNotNull(snapshot.val(), 'User should exist.');
       assert.equal(snapshot.val().bio, newBio, 'Bio should be the same.');
-      assert.equal(
-        snapshot.val().rating,
-        newRating,
-        'Rating should be the same.'
-      );
       assert.equal(snapshot.val().email, newEmail, 'Email should be the same.');
       assert.equal(
         snapshot.val().profile_picture,
@@ -238,10 +243,27 @@ function thenTheInfoShouldUpdate(done) {
         newUsername,
         'Username should be the same.'
       );
+
+      done();
+    });
+}
+
+function thenTheRatingInfoShouldUpdate(done) {
+  firebase
+    .database()
+    .ref('users/' + uid)
+    .once('value')
+    .then(function(snapshot) {
+      assert.isNotNull(snapshot.val(), 'User should exist.');
+      assert.equal(
+        snapshot.val().rating,
+        newRating,
+        'Rating should be the same.'
+      );
       assert.equal(
         snapshot.val().ratingSum,
         newRatingSum,
-        'Rating sum should be the same.'
+        'Sum should be the same.'
       );
       assert.equal(
         snapshot.val().numOfRatings,

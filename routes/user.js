@@ -28,9 +28,17 @@ router.post('/updateUser', function(req, res, next) {
       req.body.username,
       req.body.email,
       req.body.profile_picture,
-      req.body.bio,
+      req.body.bio
+    )
+  );
+});
+
+router.post('/updateRating', function(req, res, next) {
+  res.send(
+    userService.updateRating(
+      req.body.uid,
       req.body.rating,
-      req.body.ratingSum,
+      req.body.sum,
       req.body.numOfRatings
     )
   );
