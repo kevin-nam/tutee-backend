@@ -10,12 +10,30 @@ router.get('/getUser/:uid', function(req, res, next) {
 });
 
 router.post('/createUser', function(req, res, next) {
-  res.send(userService.createUser(req.body.uid, req.body.username, req.body.email, req.body.profile_picture, req.body.bio, req.body.rating));
+  res.send(
+    userService.createUser(
+      req.body.uid,
+      req.body.username,
+      req.body.email,
+      req.body.profile_picture,
+      req.body.bio
+    )
+  );
 });
 
 router.post('/updateUser', function(req, res, next) {
-  res.send(userService.updateUser(req.body.uid, req.body.username, req.body.email, req.body.profile_picture, req.body.bio, req.body.rating));
+  res.send(
+    userService.updateUser(
+      req.body.uid,
+      req.body.username,
+      req.body.email,
+      req.body.profile_picture,
+      req.body.bio,
+      req.body.rating,
+      req.body.ratingSum,
+      req.body.numOfRatings
+    )
+  );
 });
-
 
 module.exports = router;
