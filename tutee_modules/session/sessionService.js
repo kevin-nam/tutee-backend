@@ -7,6 +7,16 @@ exports.SessionService = function() {
   this.ACCEPTED = 'ACCEPTED';
   this.SESSIONS_REFERENCE = 'sessions/';
 
+  this.getSessionBySid = function(sid) {
+    return firebase.database().ref(this.SESSIONS_REFERENCE)
+      .orderByKey()
+      .equalTo(sid)
+      .once('value')
+      .then(function(snapshot) {
+        return snapshot.val();
+      });
+  };
+
   this.getSessions = function(uid) {
     return firebase.database().ref(this.SESSIONS_REFERENCE)
       .orderByChild('uid')
@@ -37,6 +47,7 @@ exports.SessionService = function() {
       var sid = newSession.key;
 
       var newSessionData = {
+        sid: sid,
         tid: tid,
         uid: uid,
         rate: rate,
@@ -48,7 +59,7 @@ exports.SessionService = function() {
       var updates = {};
       updates[this.SESSIONS_REFERENCE + sid] = newSessionData;
       firebase.database().ref().update(updates);
-      notificationService.sendNotification(uid, tid, 'NEW_SESSION_REQUEST', function() {});
+      notificationService.sendNotification(uid, tid, 'NEW_SESSION_REQUEST', newSessionData, function() {});
       return sid;
     }
     return null;
@@ -66,7 +77,7 @@ exports.SessionService = function() {
 
       if (session) {
         notificationService.sendNotification(session.tid, session.uid,
-          'ACCEPTED_SESSION_REQUEST', function() {});
+          'ACCEPTED_SESSION_REQUEST', session, function() {});
       }
     });
     return accepted;

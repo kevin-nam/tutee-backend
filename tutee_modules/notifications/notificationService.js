@@ -7,7 +7,7 @@ const ACCEPTED_SESSION_REQUEST = 'ACCEPTED_SESSION_REQUEST';
 const ACCEPTED_CONNECTION_REQUEST = 'ACCEPTED_CONNECTION_REQUEST';
 const NEW_MESSAGE = 'NEW_MESSAGE';
 
-exports.sendNotification = function(uid, uidFrom, type, callback) {
+exports.sendNotification = function(uid, uidFrom, type, content, callback) {
   userService.getUserData(uidFrom).then(function(user) {
     var username = uidFrom;
     if (user) {
@@ -18,7 +18,7 @@ exports.sendNotification = function(uid, uidFrom, type, callback) {
       function(data) {
         if (data === null || !data.notifications) {
           var notification = exports.parseAndCreateNotification(uid, uidFrom, username,
-            type);
+            type, content);
 
           return {
             uid: uid,
@@ -27,8 +27,7 @@ exports.sendNotification = function(uid, uidFrom, type, callback) {
         } else {
           console.log('exists');
           var notification = exports.parseAndCreateNotification(uid, uidFrom,
-            username,
-            type);
+            username, type, content);
 
           data.notifications.push(notification);
 
@@ -46,7 +45,7 @@ exports.sendNotification = function(uid, uidFrom, type, callback) {
   });
 };
 
-exports.parseAndCreateNotification = function(uid, uidFrom, username, type) {
+exports.parseAndCreateNotification = function(uid, uidFrom, username, type, content) {
   if (type == NEW_CONNECTION_REQUEST) {
     return {
       uidFrom: uidFrom,
@@ -59,7 +58,8 @@ exports.parseAndCreateNotification = function(uid, uidFrom, username, type) {
       uidFrom: uidFrom,
       userNameFrom: username,
       type: NEW_SESSION_REQUEST,
-      msg: 'New session request from ' + username
+      msg: 'New session request from ' + username,
+      content: content
     };
   } else if (type == NEW_MESSAGE) {
     return {
@@ -80,7 +80,8 @@ exports.parseAndCreateNotification = function(uid, uidFrom, username, type) {
       uidFrom: uidFrom,
       userNameFrom: username,
       type: ACCEPTED_SESSION_REQUEST,
-      msg: username + ' accepted your session request!'
+      msg: username + ' accepted your session request!',
+      content: content
     };
   } else {
     return null;
