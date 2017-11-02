@@ -14,6 +14,12 @@ router.get('/get/:uid', function(req, res, next) {
   });
 });
 
+router.get('/get/session/:sid', function(req, res, next) {
+  session.getSessionBySid(req.params.sid).then(function(result) {
+    res.send(result);
+  });
+});
+
 router.post('/accept', function(req, res, next) {
   res.send(session.acceptSession(req.body.sid));
 });
