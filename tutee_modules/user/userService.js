@@ -14,28 +14,48 @@ exports.createUser = function(uid, username, email, profile_picture, bio) {
   if (username !== null && email !== null && bio !== null) {
     if (profile_picture == null) {
       profile_picture =
-        'https://www.vccircle.com/wp-content/uploads/2017/03/default-profile.png';
+        '';
     }
-    firebase
-      .database()
-      .ref('users/' + uid)
-      .set({
-        username: username,
-        email: email,
-        profile_picture: profile_picture,
-        bio: bio,
-        rating: -1,
-        ratingSum: 0,
-        numOfRatings: 0
-      });
+
+    // check if user already registered
+    exports.getUserData(uid).then(function(user) {
+      // if user already registered then update, otherwise set a new user
+      if (user) {
+        var updates = {};
+        var newData = {
+          username: username,
+          email: email,
+          profile_picture: profile_picture,
+          bio: bio
+        };
+        updates['/users/' + uid] = newData;
+        firebase
+          .database()
+          .ref()
+          .child('/users/' + uid)
+          .update(newData);
+      } else {
+        firebase
+          .database()
+          .ref('users/' + uid)
+          .set({
+            username: username,
+            email: email,
+            profile_picture: profile_picture,
+            bio: bio,
+            rating: -1,
+            ratingSum: 0,
+            numOfRatings: 0
+          });
+      }
+    });
+
     return {
+      uid: uid,
       username: username,
       email: email,
       profile_picture: profile_picture,
-      bio: bio,
-      rating: -1,
-      ratingSum: 0,
-      numOfRatings: 0
+      bio: bio
     };
   }
   return null;
