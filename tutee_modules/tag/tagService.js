@@ -104,3 +104,24 @@ exports.getPidList = function(tagString, callback) {
     return callback(null);
   }
 };
+
+exports.getRecentTags = function(num) {
+  num = parseInt(num);
+  if (num < 0) {
+    num = 0;
+  }
+  var recentTags = [];
+  return firebase
+    .database()
+    .ref('/tags/')
+    .orderByKey()
+    .limitToFirst(num)
+    .once('value')
+    .then(function(snapshot) {
+      Object.keys(snapshot.val()).forEach(function(tag) {
+        recentTags.push(tag);
+      });
+
+      return recentTags;
+    });
+};

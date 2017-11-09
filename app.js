@@ -12,7 +12,7 @@ var config = {
   authDomain: 'tutee-9b050.firebaseapp.com',
   databaseURL: 'https://tutee-9b050.firebaseio.com',
   storageBucket: 'tutee-9b050.appspot.com',
-  messagingSenderId: '120931284750',
+  messagingSenderId: '120931284750'
 };
 firebase.initializeApp(config);
 
@@ -20,6 +20,7 @@ firebase.initializeApp(config);
 var auth = require('./routes/auth');
 var user = require('./routes/user');
 var post = require('./routes/post');
+var tags = require('./routes/tags');
 var session = require('./routes/session');
 var search = require('./routes/search');
 var messaging = require('./routes/messaging');
@@ -43,11 +44,15 @@ app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/mocha', express.static(path.join(__dirname, 'node_modules/mocha')));
 app.use('/chai', express.static(path.join(__dirname, 'node_modules/chai')));
-app.use('/tutee_modules', express.static(path.join(__dirname, 'tutee_modules')));
+app.use(
+  '/tutee_modules',
+  express.static(path.join(__dirname, 'tutee_modules'))
+);
 
 app.use('/auth', auth);
 app.use('/user', user);
 app.use('/post', post);
+app.use('/tags', tags);
 app.use('/session', session);
 app.use('/search', search);
 app.use('/messaging', messaging);
