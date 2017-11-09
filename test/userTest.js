@@ -45,6 +45,7 @@ describe('CRUD User Tests', function() {
   it('Given a UId, when creating a user, then the user should exist.', function(
     done
   ) {
+    this.timeout(5000);
     givenAuid();
     whenCreatingTheUser();
     thenTheUserExists(done);
@@ -113,7 +114,7 @@ Given
 ***********************************************************************/
 
 function givenAuid() {
-  uid = 'hello';
+  uid = 'hello123';
 }
 
 function givenAuidAndNullBio() {
@@ -164,29 +165,24 @@ Then
 ***********************************************************************/
 
 function thenTheUserExists(done) {
-  firebase
-    .database()
-    .ref('users/' + uid)
-    .once('value')
-    .then(function(snapshot) {
-      assert.equal(snapshot.val().bio, bio, 'Not the same bio.');
-      assert.equal(snapshot.val().rating, -1, 'Not the same rating.');
-      assert.equal(snapshot.val().email, email, 'Not the same email.');
-      assert.equal(
-        snapshot.val().profile_picture,
-        profile_picture,
-        'Not the same profile picture.'
-      );
-      assert.equal(snapshot.val().username, username, 'Not the same username.');
-      assert.equal(snapshot.val().ratingSum, 0, 'Not the same ratingSum.');
-      assert.equal(
-        snapshot.val().numOfRatings,
-        0,
-        'Not the same number of ratings'
-      );
+  setTimeout(function() {
+    firebase
+      .database()
+      .ref('users/' + uid)
+      .once('value')
+      .then(function(snapshot) {
+        assert.equal(snapshot.val().bio, bio, 'Not the same bio.');
+        assert.equal(snapshot.val().email, email, 'Not the same email.');
+        assert.equal(
+          snapshot.val().profile_picture,
+          profile_picture,
+          'Not the same profile picture.'
+        );
+        assert.equal(snapshot.val().username, username, 'Not the same username.');
 
-      done();
-    });
+        done();
+      });
+  }, 1000);
 }
 
 function thenTheUserShouldExist(done) {
