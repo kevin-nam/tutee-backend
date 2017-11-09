@@ -66,7 +66,7 @@ exports.parseAndCreateNotification = function(uid, uidFrom, username, type, cont
       uidFrom: uidFrom,
       userNameFrom: username,
       type: NEW_MESSAGE,
-      msg: 'New message from ' + uidFrom
+      msg: 'New message from ' + username
     };
   } else if (type == ACCEPTED_CONNECTION_REQUEST) {
     return {
