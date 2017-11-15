@@ -67,7 +67,7 @@ exports.updateUser = function(
 exports.updateRating = function(uid, newRating, newSum, newNumOfRatings) {
   var updates = {};
   var newData = {
-    rating: newRating,
+    rating: Math.round(newRating * 10) / 10,
     ratingSum: newSum,
     numOfRatings: newNumOfRatings
   };
